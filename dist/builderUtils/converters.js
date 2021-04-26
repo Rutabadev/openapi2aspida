@@ -58,13 +58,13 @@ var object2value = function (obj) {
         return exports.isRefObject(target) || !target.deprecated;
     })
         .map(function (name) {
-        var _a, _b;
+        var _a;
         var val = exports.schema2value(properties[name]);
         if (!val)
             return null;
         return {
             name: exports.getPropertyName(name),
-            required: (_b = (_a = obj.required) === null || _a === void 0 ? void 0 : _a.includes(name)) !== null && _b !== void 0 ? _b : true,
+            required: !!((_a = obj.required) === null || _a === void 0 ? void 0 : _a.includes(name)),
             description: val.description,
             values: [val]
         };

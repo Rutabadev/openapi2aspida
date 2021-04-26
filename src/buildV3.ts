@@ -72,7 +72,7 @@ export default (openapi: OpenAPIV3.Document) => {
               const reqHeaders: Prop[] = []
               const refQuery: PropValue[] = []
               const query: Prop[] = []
-              let queryRequired = true
+              let queryRequired = false
 
               ;[...(openapi.paths[path]!.parameters || []), ...(target.parameters || [])].forEach(
                 p => {
@@ -92,7 +92,7 @@ export default (openapi: OpenAPIV3.Document) => {
                         break
                       case 'query':
                         refQuery.push(val)
-                        queryRequired = ref.required ?? true
+                        if (ref.required) queryRequired = true
                         break
                       default:
                         break
@@ -103,7 +103,7 @@ export default (openapi: OpenAPIV3.Document) => {
 
                     const prop = {
                       name: getPropertyName(p.name),
-                      required: p.required ?? true,
+                      required: !!p.required,
                       description: p.description ?? null,
                       values: [value]
                     }
@@ -114,7 +114,7 @@ export default (openapi: OpenAPIV3.Document) => {
                         break
                       case 'query':
                         query.push(prop)
-                        queryRequired = p.required ?? true
+                        if (p.required) queryRequired = true
                         break
                       default:
                         break
@@ -250,7 +250,7 @@ export default (openapi: OpenAPIV3.Document) => {
             if (target.requestBody) {
               let reqFormat = ''
               let reqBody: PropValue | null = null
-              let required = true
+              let required = false
               let description: string | null = null
 
               if (isRefObject(target.requestBody)) {
@@ -268,10 +268,10 @@ export default (openapi: OpenAPIV3.Document) => {
                   description: null,
                   value: $ref2Type(target.requestBody.$ref)
                 }
-                required = ref.required ?? true
+                required = !!ref.required
                 description = ref.description ?? null
               } else {
-                required = target.requestBody.required ?? true
+                required = !!target.requestBody.required
                 description = target.requestBody.description ?? null
 
                 if (target.requestBody.content['multipart/form-data']?.schema) {

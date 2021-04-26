@@ -56,7 +56,7 @@ exports.default = (function (openapi) {
         ]);
         var methods = methodProps
             .map(function (method) {
-            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j;
             var target = openapi.paths[path][method];
             if (target.deprecated)
                 return null;
@@ -66,9 +66,9 @@ exports.default = (function (openapi) {
                 var reqHeaders_1 = [];
                 var refQuery_1 = [];
                 var query_1 = [];
-                var queryRequired_1 = true;
+                var queryRequired_1 = false;
                 __spreadArray(__spreadArray([], __read((openapi.paths[path].parameters || []))), __read((target.parameters || []))).forEach(function (p) {
-                    var _a, _b, _c, _d, _e;
+                    var _a, _b;
                     if (converters_1.isRefObject(p)) {
                         var ref = resolvers_1.resolveParamsRef(openapi, p.$ref);
                         var val = {
@@ -84,7 +84,8 @@ exports.default = (function (openapi) {
                                 break;
                             case 'query':
                                 refQuery_1.push(val);
-                                queryRequired_1 = (_b = ref.required) !== null && _b !== void 0 ? _b : true;
+                                if (ref.required)
+                                    queryRequired_1 = true;
                                 break;
                             default:
                                 break;
@@ -96,8 +97,8 @@ exports.default = (function (openapi) {
                             return;
                         var prop = {
                             name: converters_1.getPropertyName(p.name),
-                            required: (_c = p.required) !== null && _c !== void 0 ? _c : true,
-                            description: (_d = p.description) !== null && _d !== void 0 ? _d : null,
+                            required: !!p.required,
+                            description: (_b = p.description) !== null && _b !== void 0 ? _b : null,
                             values: [value]
                         };
                         switch (p.in) {
@@ -106,7 +107,8 @@ exports.default = (function (openapi) {
                                 break;
                             case 'query':
                                 query_1.push(prop);
-                                queryRequired_1 = (_e = p.required) !== null && _e !== void 0 ? _e : true;
+                                if (p.required)
+                                    queryRequired_1 = true;
                                 break;
                             default:
                                 break;
@@ -228,7 +230,7 @@ exports.default = (function (openapi) {
             if (target.requestBody) {
                 var reqFormat = '';
                 var reqBody = null;
-                var required = true;
+                var required = false;
                 var description = null;
                 if (converters_1.isRefObject(target.requestBody)) {
                     var ref = resolvers_1.resolveReqRef(openapi, target.requestBody.$ref);
@@ -245,26 +247,26 @@ exports.default = (function (openapi) {
                         description: null,
                         value: converters_1.$ref2Type(target.requestBody.$ref)
                     };
-                    required = (_d = ref.required) !== null && _d !== void 0 ? _d : true;
-                    description = (_e = ref.description) !== null && _e !== void 0 ? _e : null;
+                    required = !!ref.required;
+                    description = (_d = ref.description) !== null && _d !== void 0 ? _d : null;
                 }
                 else {
-                    required = (_f = target.requestBody.required) !== null && _f !== void 0 ? _f : true;
-                    description = (_g = target.requestBody.description) !== null && _g !== void 0 ? _g : null;
-                    if ((_h = target.requestBody.content['multipart/form-data']) === null || _h === void 0 ? void 0 : _h.schema) {
+                    required = !!target.requestBody.required;
+                    description = (_e = target.requestBody.description) !== null && _e !== void 0 ? _e : null;
+                    if ((_f = target.requestBody.content['multipart/form-data']) === null || _f === void 0 ? void 0 : _f.schema) {
                         reqFormat = 'FormData';
                         reqBody = converters_1.schema2value(target.requestBody.content['multipart/form-data'].schema);
                     }
-                    else if ((_j = target.requestBody.content['application/x-www-form-urlencoded']) === null || _j === void 0 ? void 0 : _j.schema) {
+                    else if ((_g = target.requestBody.content['application/x-www-form-urlencoded']) === null || _g === void 0 ? void 0 : _g.schema) {
                         reqFormat = 'URLSearchParams';
                         reqBody = converters_1.schema2value(target.requestBody.content['application/x-www-form-urlencoded'].schema);
                     }
                     else {
                         var content = target.requestBody.content &&
-                            ((_k = Object.entries(target.requestBody.content).find(function (_a) {
+                            ((_h = Object.entries(target.requestBody.content).find(function (_a) {
                                 var _b = __read(_a, 1), key = _b[0];
                                 return key.startsWith('application/');
-                            })) === null || _k === void 0 ? void 0 : _k[1]);
+                            })) === null || _h === void 0 ? void 0 : _h[1]);
                         if (content === null || content === void 0 ? void 0 : content.schema)
                             reqBody = converters_1.schema2value(content.schema);
                     }
@@ -297,7 +299,7 @@ exports.default = (function (openapi) {
             return {
                 name: method,
                 required: true,
-                description: (_l = target.description) !== null && _l !== void 0 ? _l : null,
+                description: (_j = target.description) !== null && _j !== void 0 ? _j : null,
                 values: [
                     { isArray: false, isEnum: false, nullable: false, description: null, value: params }
                 ]

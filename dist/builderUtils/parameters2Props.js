@@ -10,7 +10,7 @@ exports.default = (function (params, openapi) {
             return !(converters_1.isRefObject(target) ? resolvers_1.resolveParamsRef(openapi, target.$ref) : target).deprecated;
         })
             .map(function (defKey) {
-            var _a, _b;
+            var _a;
             var target = params[defKey];
             var prop;
             if (converters_1.isRefObject(target)) {
@@ -22,8 +22,8 @@ exports.default = (function (params, openapi) {
                     return null;
                 prop = {
                     name: converters_1.getPropertyName(target.name),
-                    required: (_a = target.required) !== null && _a !== void 0 ? _a : false,
-                    description: (_b = target.description) !== null && _b !== void 0 ? _b : null,
+                    required: !!target.required,
+                    description: (_a = target.description) !== null && _a !== void 0 ? _a : null,
                     values: [value]
                 };
             }
